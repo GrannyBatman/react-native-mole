@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, Image } from 'react-native'
-import { connect } from 'react-redux'
-import { addScore } from '../redux/actions'
+import { useDispatch } from 'react-redux'
+import scoreReducer from '../redux/rtk-reducer'
 
 const Square = props => {
 	const [moleActive, setMoleActive] = useState(false)
-	const [hitBlock, setHitBlock] = useState(false)
+	const [hitBlocking, setHitBlocking] = useState(false)
+	const dispatch = useDispatch()
+	const {
+		actions: { addScore },
+	} = scoreReducer
 
 	const randomTime = randomNumber(15000, 1000)
 	let timerId
@@ -13,9 +17,10 @@ const Square = props => {
 	useEffect(() => {
 		timerId = setInterval(() => {
 			setMoleActive(true)
-			setHitBlock(false)
+			setHitBlocking(false)
 			setTimeout(() => {
 				setMoleActive(false)
+				setHitBlocking(true)
 			}, 800)
 		}, randomTime)
 		setTimeout(endGame, props.time * 1000)
@@ -25,14 +30,15 @@ const Square = props => {
 		return Math.floor(Math.random() * (max - min + 1000) + min)
 	}
 
+	//! fix endGame
 	function endGame() {
 		clearInterval(timerId)
 	}
 
 	function onHit() {
-		if (hitBlock) return
-		props.addScore()
-		setHitBlock(true)
+		if (hitBlocking) return
+		dispatch(addScore())
+		setHitBlocking(true)
 	}
 
 	return (
@@ -43,7 +49,7 @@ const Square = props => {
 						? require('../assets/mole.png')
 						: require('../assets/hole.png')
 				}
-				style={moleActive ? styles.mole : styles.square}
+				style={styles.square}
 			></Image>
 		</TouchableOpacity>
 	)
@@ -58,25 +64,6 @@ const styles = StyleSheet.create({
 		backgroundColor: '#9BF89C',
 		width: '100%',
 	},
-	mole: {
-		flex: 1,
-		minWidth: 90,
-		minHeight: 90,
-		backgroundColor: '#9BF89C',
-		width: '100%',
-	},
 })
 
-const mapStateToProps = state => {
-	return {
-		score: state.score,
-	}
-}
-
-const mapDispatchToProps = dispatch => {
-	return {
-		addScore: () => dispatch(addScore()),
-	}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Square)
+export default Square

@@ -1,7 +1,7 @@
 import React from 'react'
 import GameBoard from './components/GameBoard'
 import { Provider } from 'react-redux'
-import store from './redux/store'
+import store from './redux/rtk-store'
 
 export default function App() {
 	return (

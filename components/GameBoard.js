@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, ImageBackground } from 'react-native'
-import { connect } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { getScore } from '../redux/rtk-reducer'
 import Square from './Square'
 
-const GameBoard = props => {
-	const time = 60,
-		[timeLeft, setTimeLeft] = useState(time)
+const GameBoard = () => {
+	const time = 60
+	const [timeLeft, setTimeLeft] = useState(time)
+	const score = useSelector(getScore)
 
 	useEffect(() => {
 		if (!timeLeft) return
@@ -27,7 +29,7 @@ const GameBoard = props => {
 			<View style={styles.container}>
 				<Text style={styles.header}>Whack-a-mole App!</Text>
 				<Text>You have {timeLeft} seconds left</Text>
-				<Text>{props.score} Moles whacked!</Text>
+				<Text>{score} Moles whacked!</Text>
 				<View style={styles.game}>{createTable}</View>
 			</View>
 		</ImageBackground>
@@ -53,10 +55,4 @@ const styles = StyleSheet.create({
 	},
 })
 
-const mapStateToProps = state => {
-	return {
-		score: state.score,
-	}
-}
-
-export default connect(mapStateToProps)(GameBoard)
+export default GameBoard
